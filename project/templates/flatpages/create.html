@@ -1,0 +1,13 @@
+{% extends 'flatpages/default.html' %}
+
+{% block content %}
+<h1><font color="red">NEWS(NW) & ARTICLES(AR)</h1></font>
+<h1>Создайте свою публикацию</h1>
+<h6>Заполните все поля</h6>
+<hr>
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save" />
+</form>
+{% endblock content %}
