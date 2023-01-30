@@ -1,10 +1,13 @@
+from django.contrib.auth.mixins import PermissionRequiredMixin
+
 from datetime import datetime
 from django.urls import reverse_lazy
 
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post
+from .models import Post, Author
 from .filters import PostFilter
 from .forms import PostForm
+from django.core.exceptions import PermissionDenied
 
 
 
@@ -66,18 +69,39 @@ class PostSearchDetail(DetailView):
         context['time_now'] = datetime.utcnow()
         return context
 
-class PostCreate(CreateView):
+class PostCreate(PermissionRequiredMixin, CreateView):
+    permission_required = ("newsandart.add_post",)
+    # raise_exception = True
     form_class = PostForm
     model = Post
     template_name = 'flatpages/create.html'
 
-class PostUpdate(UpdateView):
+    def form_valid(self, form):
+        form.instance.author = self.request.user.author
+        return super().form_valid(form)
+    # def form_valid(self, form):
+    #     fields = form.save(commit=False)
+    #     fields.postAuthor = Author.objects.get(author_user=self.request.user)
+    #     fields.save()
+    #     return super().form_valid(form)
+
+
+class PostUpdate(PermissionRequiredMixin, UpdateView):
+        permission_required = ("newsandart.add_post",)
         form_class = PostForm
         model = Post
         template_name = 'flatpages/edit.html'
 
+        def has_permission(self):
+            perms = self.get_permission_required()
+            if not self.get_object().author.authorUser == self.request.user:
+                raise PermissionDenied()
+            return self.request.user.has_perms(perms)
 
-class PostDelete(DeleteView):
+
+
+class PostDelete(PermissionRequiredMixin, DeleteView):
+        permission_required = ("newsandart.add_post",)
         model = Post
         template_name = 'flatpages/delete.html'
         success_url = reverse_lazy('post_list')

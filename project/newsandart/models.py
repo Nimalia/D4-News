@@ -5,9 +5,11 @@ from django.core.validators import MinValueValidator
 from django.urls import reverse
 
 
+
 class Author(models.Model):
     authorUser = models.OneToOneField(User, on_delete=models.CASCADE)
     ratingAuthor = models.SmallIntegerField(default=0)
+
 
     def __str__(self):
         return f'{self.authorUser.username}'
@@ -54,6 +56,7 @@ class Post(models.Model):
     title = models.CharField(max_length=128)
     text = models.TextField()
     rating = models.SmallIntegerField(default=0)
+
 
     class Meta:
         verbose_name = "Публикация"

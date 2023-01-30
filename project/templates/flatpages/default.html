@@ -29,13 +29,24 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/news/">NEWs&ARTs</a>
+                            <a class="nav-link" href="/news/">allNEWs&ARTs</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/news/search">SEARCH(Поиск)</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/news/create">Create(Создание публикации)</a>
+                         <li class="nav-item">
+
+                            {% if request.user.is_authenticated %}
+                           <font color = "#cc0000">user:{{ request.user.username }}</font>
+                                <a class="nav-link" href='http://127.0.0.1:8003/accounts/logout/'>Выход</a>
+                            {% else %}
+                                <a class="nav-link" href='http://127.0.0.1:8003/accounts/login'>Вход</a>
+                                <a class="nav-link" href='http://127.0.0.1:8003/accounts/signup'>Регистрация</a>
+                            {% endif %}
+                         </li>
+
                     </ul>
                 </div>
             </div>

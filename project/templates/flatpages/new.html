@@ -17,6 +17,9 @@ NEWS&ARTICLE (Новости и статьи)
                <td><b>Текст</b></td>
                <td><b>Дата публикации</b></td>
                <td><b>Категория публикации</b></td>
+               {% if perms.newsandart.change_post or perms.newsandart.delete_post %}
+                <td><b>Действия</b></td>
+               {% endif %}
            </tr>
 
            <tr>
@@ -26,8 +29,12 @@ NEWS&ARTICLE (Новости и статьи)
                <td valign="top">{{ new.get_categoryType_display }}</td>
 
                <td>
-                    <a href="{% url 'post_edit' new.id %}">Редактировать</a>
+                    {% if perms.newsandart.change_post %}
+                    <a href="{% url 'post_edit' pk=new.id %}">Редактировать</a>
+                    {% endif %}
+                    {% if perms.newsandart.delete_post %}
                     <a href="{% url 'post_delete' new.id %}">Удалить</a>
+                    {% endif %}
                </td>
 
            </tr>

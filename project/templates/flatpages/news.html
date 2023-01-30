@@ -15,6 +15,11 @@ NEWS & ARTICLES (Новости и статьи)
 <h3> {{ next_post|default_if_none:"На данный момент, новостей больше нет" }} </h3>
 
 <hr>
+
+{% if perms.newsandart.add_post %}
+<a href="{% url 'post_create' %}">Создать публикацию</a>
+{% endif %}
+
 {% if news %}
        <table>
            <tr>
@@ -22,18 +27,26 @@ NEWS & ARTICLES (Новости и статьи)
                <td><b>Текст</b></td>
                <td><b>Дата публикации</b></td>
                <td><b>Категория публикации</b></td>
+               {% if perms.newsandart.change_post or perms.newsandart.delete_post %}
+                <td><b>Действия</b></td>
+                {% endif %}
+
            </tr>
 
            {% for post in news %}
            <tr>
-               <td align="left">{{ post.title|censor }}</td>
+               <td><a href="{% url 'post_detail' pk=post.id %}">{{ post.title|censor }}</a></td>
                <td align="left">{{ post.text|censor|truncatechars:20 }}</td>
                <td>{{ post.dateCreation|date:"d M Y" }}</td>
                <td>{{ post.get_categoryType_display}}</td>
 
                 <td>
-                    <a href="{% url 'post_edit' post.id %}">Редактировать</a>
+                    {% if perms.newsandart.change_post %}
+                    <a href="{% url 'post_edit' pk=post.id %}">Редактировать</a>
+                    {% endif %}
+                    {% if perms.newsandart.delete_post %}
                     <a href="{% url 'post_delete' post.id %}">Удалить</a>
+                    {% endif %}
                 </td>
 
 
@@ -46,7 +59,7 @@ NEWS & ARTICLES (Новости и статьи)
    {% endif %}
 
 {% if page_obj.has_previous %}
-       <a href="?page=1">1</a>
+       <a href="?page=1">Начало</a>
        {% if page_obj.previous_page_number != 1 %}
            ...
            <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>

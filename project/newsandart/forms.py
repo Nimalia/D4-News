@@ -4,7 +4,7 @@ from .models import Post, Category, Author
 
 
 class PostForm(forms.ModelForm):
-    author = forms.ModelChoiceField(label='Автор', queryset=Author.objects.all())
+    # author = forms.ModelChoiceField(label='Автор', queryset=Author.objects.all())
     title = forms.CharField(label='Заголовок')
     categoryType = forms.ChoiceField(label='Тип', choices=Post.CATEGORY_CHOICE)
     text = forms.CharField(widget=forms.Textarea, label='Текст')
@@ -12,7 +12,7 @@ class PostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ['author', 'title', 'categoryType', 'text', "postCategory",]
+        fields = ['title', 'categoryType', 'text', "postCategory",]
 
     # def clean(self):
     #     cleaned_data = super().clean()

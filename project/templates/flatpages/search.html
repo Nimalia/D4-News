@@ -27,18 +27,25 @@
                <td><b>Текст</b></td>
                <td><b>Дата публикации</b></td>
                <td><b>Категория публикации</b></td>
+               {% if perms.newsandart.change_post or perms.newsandart.delete_post %}
+                <td><b>Действия</b></td>
+               {% endif %}
            </tr>
 
            {% for post in search %}
            <tr>
-               <td align="left">{{ post.title|censor }}</td>
+               <td><a href="{% url 'post_detail' pk=post.id %}">{{ post.title|censor }}</a></td>
                <td align="left">{{ post.text|censor|truncatechars:20 }}</td>
                <td>{{ post.dateCreation|date:"d M Y" }}</td>
                <td>{{ post.get_categoryType_display}}</td>
 
                <td>
-                    <a href="{% url 'post_edit' post.id %}">Редактировать</a>
+                    {% if perms.newsandart.change_post %}
+                    <a href="{% url 'post_edit' pk=post.id %}">Редактировать</a>
+                    {% endif %}
+                    {% if perms.newsandart.delete_post %}
                     <a href="{% url 'post_delete' post.id %}">Удалить</a>
+                    {% endif %}
                </td>
            </tr>
            {% endfor %}
@@ -49,7 +56,7 @@
    {% endif %}
 
 {% if page_obj.has_previous %}
-       <a href="?page=1">1</a>
+       <a href="?page=1">Начало</a>
        {% if page_obj.previous_page_number != 1 %}
            ...
            <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
@@ -66,7 +73,8 @@
            ...
            <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
        {% endif %}
-   {% endif %}
+    {% endif %}
+
 
 {% endblock content %}
 
