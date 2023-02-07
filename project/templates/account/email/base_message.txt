@@ -1,0 +1,7 @@
+{% load i18n %}{% autoescape off %}{% blocktrans with site_name=current_site.name %}Добрый день!Это NewsPortal=){% endblocktrans %}
+
+{% block content %}{% endblock %}
+
+{% blocktrans with site_domain=current_site.domain %}Спасибо, что с нами!Ваш NewsPortal!
+http://127.0.0.1:8003/news{% endblocktrans %}
+{% endautoescape %}

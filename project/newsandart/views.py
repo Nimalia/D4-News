@@ -4,11 +4,12 @@ from datetime import datetime
 from django.urls import reverse_lazy
 
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post, Author
 from .filters import PostFilter
 from .forms import PostForm
 from django.core.exceptions import PermissionDenied
-
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404
+from .models import Category, Post
 
 
 class PostList(ListView):
@@ -30,6 +31,7 @@ class PostList(ListView):
         context['filterset'] = self.filterset
         return context
 
+
 class PostDetail(DetailView):
     model = Post
     template_name = 'flatpages/new.html'
@@ -39,6 +41,7 @@ class PostDetail(DetailView):
         context = super().get_context_data(**kwargs)
         context['time_now'] = datetime.utcnow()
         return context
+
 
 class PostSearchList(ListView):
     model = Post
@@ -59,6 +62,7 @@ class PostSearchList(ListView):
         context['filterset'] = self.filterset
         return context
 
+
 class PostSearchDetail(DetailView):
     model = Post
     template_name = 'flatpages/search.html'
@@ -68,6 +72,7 @@ class PostSearchDetail(DetailView):
         context = super().get_context_data(**kwargs)
         context['time_now'] = datetime.utcnow()
         return context
+
 
 class PostCreate(PermissionRequiredMixin, CreateView):
     permission_required = ("newsandart.add_post",)
@@ -87,21 +92,56 @@ class PostCreate(PermissionRequiredMixin, CreateView):
 
 
 class PostUpdate(PermissionRequiredMixin, UpdateView):
-        permission_required = ("newsandart.add_post",)
-        form_class = PostForm
-        model = Post
-        template_name = 'flatpages/edit.html'
+    permission_required = ("newsandart.add_post",)
+    form_class = PostForm
+    model = Post
+    template_name = 'flatpages/edit.html'
 
-        def has_permission(self):
-            perms = self.get_permission_required()
-            if not self.get_object().author.authorUser == self.request.user:
-                raise PermissionDenied()
-            return self.request.user.has_perms(perms)
-
+    def has_permission(self):
+        perms = self.get_permission_required()
+        if not self.get_object().author.authorUser == self.request.user:
+            raise PermissionDenied()
+        return self.request.user.has_perms(perms)
 
 
 class PostDelete(PermissionRequiredMixin, DeleteView):
-        permission_required = ("newsandart.add_post",)
-        model = Post
-        template_name = 'flatpages/delete.html'
-        success_url = reverse_lazy('post_list')
+    permission_required = ("newsandart.add_post",)
+    model = Post
+    template_name = 'flatpages/delete.html'
+    success_url = reverse_lazy('post_list')
+
+
+class CategoryListView(ListView):
+    model = Post
+    template_name = "flatpages/category_list.html"
+    context_object_name = "category_news_list"
+
+    def get_queryset(self):
+        self.postCategory = get_object_or_404(Category, id=self.kwargs["pk"])
+        queryset = Post.objects.filter(postCategory=self.postCategory).order_by("-dateCreation")
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["is_not_subscriber"] = self.request.user not in self.postCategory.subscribers.all()
+        context["category"] = self.postCategory
+        return context
+
+
+@login_required
+def subscribe(request, pk):
+    user = request.user
+    category = Category.objects.get(id=pk)
+    category.subscribers.add(user)
+
+    message = "Вы успешно подписались на рассылку новостей данной категории"
+    return render(request, "flatpages/subscribe.html", {"category": category, "message": message})
+
+@login_required
+def unsubscribe(request, pk):
+    user = request.user
+    category = Category.objects.get(id=pk)
+    category.subscribers.remove(user)
+
+    message = "Вы успешно  отписались от рассылки новостей данной категории"
+    return render(request, "flatpages/unsubscribe.html", {"category": category, "message": message})

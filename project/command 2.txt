@@ -1,0 +1,86 @@
+>>> from newsandart.models import *
+>>> u1 = User.objects.create_user(username="Greg")
+>>> u1
+<User: Greg>
+>>> u2 = User.objects.create_user(username="Paul")
+>>> u2
+<User: Paul>
+>>> Author.objects.create(authorUser=u1)
+<Author: Author object (1)>
+>>> Author.objects.create(authorUser=u2)
+<Author: Author object (2)>
+>>> Category.objects.create(name="SPORT")
+<Category: Category object (1)>
+>>> Category.objects.create(name="CULTURE")
+<Category: Category object (2)>
+>>> Category.objects.create(name="CITY")
+<Category: Category object (3)>
+>>> Category.objects.create(name="MOVIE")
+<Category: Category object (4)>
+>>> author = Author.objects.get(id=1)
+>>> author2 = Author.objects.get(id=2)
+>>> Post.objects.create(author=author, categoryType="AR", title="Химки обновили полсостава", text="В первой лиге есть симпатичная команда Родина. Когда она вышла в ФНЛ, там произошли большие изменения в составе. Пригласили квалифицированных футболистов, серьезного тренера. Но Родине потребовалось несколько месяцев, чтобы игроки притерлись друг к другу. Только в концовке первой части сезона команда смогла выбраться из подвала турнирной таблицы! Нужно было время, а у Химок его просто нет! Есть костяк, за счет которого ты можешь набирать очки. Так зачем ты сам себя оставляешь без него?! Или руководство Химок думает, что обновить полсостава — это все равно что поменять колесо у машины?В футболе все возможно. Но Химки могут спастись только в одном случае. Если вместо тех игроков, с которыми сейчас расстались, придут футболисты гораздо более высокого класса.")
+<Post: Post object (1)>
+>>> Post.objects.get(id=1)
+<Post: Post object (1)>
+>>> Post.objects.get(id=1)
+<Post: Post object (1)>
+>>> Post.objects.create(author=author2, categoryType="AR", title="Якутское кино", text="в прокат выходит фильм Никиты Аржакова «Тыгын Дархан». Это историческая драма, действие которой разворачивается в XVII веке. Ее главным героем стал Тыгын Дархан — правитель якутов-кангаласцев, один из крупных военачальников того времени и персонаж многочисленных легенд.В русских исторических документах имя Тыгына упоминается всего несколько раз. К тому времени, когда казаки пришли на кангаласские земли, он был уже немолод, а вскоре скончался. Точные обстоятельства его смерти неизвестны. По одной версии, Тыгын Дархан погиб в бою с казаками, по другой — его взяли в заложники и казнили. Некоторые историки считают, что предводитель якутов умер своей смертью в преклонном возрасте.")
+<Post: Post object (2)>
+>>> Post.objects.create(author=author2, categoryType="NW", title="ГМИРЛИ представляет выставку Приключения Шерлока Холмса в России", text="28 декабря в Государственном музее истории российской литературы им. В.И. Даля, в отделе «Дом И.С. Остроухова в Трубниках», откроется выставка «Приключения Шерлока Холмса в России». Экспозиция представляет русский взгляд на Шерлока Холмса на примере отечественных иллюстраций, театра и кино, а также многочисленных произведений российских авторов.")
+<Post: Post object (3)>
+>>> Post.objects.get(id=1).postCategory.add(Category.objects.get(id=1))
+>>> Post.objects.get(id=1).postCategory.add(Category.objects.get(id=3))
+>>> Post.objects.get(id=2).postCategory.add(Category.objects.get(id=4))
+>>> Post.objects.get(id=2).postCategory.add(Category.objects.get(id=2))
+>>> Post.objects.get(id=3).postCategory.add(Category.objects.get(id=2))
+>>> Post.objects.get(id=3).postCategory.add(Category.objects.get(id=3))
+>>> Comment.objects.create(commentPost=Post.objects.get(id=1), commentUser=Author.objects.get(id=1).authorUser, text="как всегда, что тут скажешь")
+<Comment: Comment object (1)>
+>>> Comment.objects.create(commentPost=Post.objects.get(id=2), commentUser=Author.objects.get(id=2).authorUser, text="очень интересно,здорово!")
+<Comment: Comment object (2)>
+>>> Comment.objects.create(commentPost=Post.objects.get(id=2), commentUser=Author.objects.get(id=1).authorUser, text="больше снимать нечего")
+<Comment: Comment object (3)>
+>>> Comment.objects.create(commentPost=Post.objects.get(id=3), commentUser=Author.objects.get(id=2).authorUser, text="круто, схожу")
+<Comment: Comment object (4)>
+>>> Comment.objects.get(id=1).like()
+>>> Comment.objects.get(id=2).like()
+>>> Comment.objects.get(id=2).like()
+>>> Comment.objects.get(id=2).like()
+>>> Comment.objects.get(id=2).like()
+>>> Comment.objects.get(id=2).like()
+>>> Comment.objects.get(id=2).rating
+5
+>>> Comment.objects.get(id=3).like()
+>>> Comment.objects.get(id=3).like()
+>>> Comment.objects.get(id=3).dislike()
+>>> Author.objects.get(id=1)
+<Author: Author object (1)>
+>>> a = Author.objects.get(id=1)
+>>> a.update_rating()
+>>> a.ratingAuthor
+2
+>>> Post.objects.get(id=1).like()
+>>> a.update_rating()
+>>> a.ratingAuthor
+5
+>>> a = Author.objects.order_by("-ratingAuthor")
+>>> a
+<QuerySet [<Author: Author object (1)>, <Author: Author object (2)>]>
+>>> a = Author.objects.order_by("-ratingAuthor")[:1]
+>>> for i in a:
+...     i.ratingAuthor
+...     i.authorUser.username
+...
+5
+'Greg'
+>>> bestPost = Post.objects.order_by('-rating')[0:1].values('dateCreation','author__authorUser__username','rating', 'title'))
+>>> bestPost
+<QuerySet [{'dateCreation': datetime.datetime(2023, 1, 11, 17, 31, 28, 748320, tzinfo=datetime.timezone.utc), 'author__authorUser__username': 'Greg', 'rating': 1, 'title': 'Химки обновили полсостава'}]>
+>>> Post.objects.order_by('-rating')[0].preview()
+'В первой лиге есть симпатичная команда Родина. Когда она вышла в ФНЛ, там произошли большие изменения в составе. Пригласили...'
+
+>>> commentPost = Post.objects.order_by('-rating')[0].comment_set.all().values('dateCreation', 'commentUser__username', 'rating', 'text')
+>>> commentPost
+<QuerySet [{'dateCreation': datetime.datetime(2023, 1, 11, 18, 2, 31, 206381, tzinfo=datetime.timezone.utc), 'commentUser__username': 'Greg', 'rating': 1, 'text': 'как всегда, что тут скажешь'}]>
+>>>
