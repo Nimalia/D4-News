@@ -9,7 +9,7 @@ Let me tell you about this project
 
 
 # [NEWsPortal](http://127.0.0.1:8003/news/)
-### [![Typing SVG](https://readme-typing-svg.herokuapp.com?color=%2336BCF7&lines=News and articles(Новости и статьи))](https://git.io/typing-svg)
+### [![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=1000&color=F70B25&background=00010E00&width=435&lines=News+and+articles(%D0%9D%D0%BE%D0%B2%D0%BE%D1%81%D1%82%D0%B8+%D0%B8+%D1%81%D1%82%D0%B0%D1%82%D1%8C%D0%B8))](https://git.io/typing-svg)
 
 ---
 Project developed by:
