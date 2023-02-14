@@ -1,5 +1,7 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin
-
+from django.http import HttpResponse
+from django.views import View
+from .tasks import send_message
 from datetime import datetime
 from django.urls import reverse_lazy
 
@@ -8,7 +10,7 @@ from .filters import PostFilter
 from .forms import PostForm
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Category, Post
 
 
@@ -145,3 +147,15 @@ def unsubscribe(request, pk):
 
     message = "Вы успешно  отписались от рассылки новостей данной категории"
     return render(request, "flatpages/unsubscribe.html", {"category": category, "message": message})
+
+# class NewPostView(View):
+#     def get(self, request):
+#         send_message.delay()
+#         return redirect("/")
+
+
+
+# class WeeklyPostsViews(View):
+#     def get(self, request):
+#         .delay()
+#         return redirect("/")

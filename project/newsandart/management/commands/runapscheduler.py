@@ -1,5 +1,3 @@
-# day_of_week="tue", hour="21", minute="39"
-
 import logging
 import datetime
 from django.template.loader import render_to_string
@@ -12,32 +10,33 @@ from django_apscheduler.jobstores import DjangoJobStore
 from django_apscheduler.models import DjangoJobExecution
 from newsandart.models import Post, Category
 from django.conf import settings
+from newsandart.tasks import my_job
 
 logger = logging.getLogger(__name__)
 
-def my_job():
-    today = datetime.datetime.now()
-    last_week = today - datetime.timedelta(days=7)
-    posts = Post.objects.filter(dateCreation__gte=last_week)
-    categories = set(posts.values_list("postCategory__name", flat=True))
-    subscribers = set(Category.objects.filter(name__in=categories).values_list("subscribers__email", flat=True))
-    print(subscribers)
-    html_content = render_to_string(
-        "daily_post.html",
-        {
-            "link": settings.SITE_URL,
-            "posts": posts,
-        }
-    )
-
-    msg = EmailMultiAlternatives(
-        subject="Публикации за неделю",
-        body="",
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        to=subscribers,
-    )
-    msg.attach_alternative(html_content, "text/html")
-    msg.send()
+# def my_job():
+#     today = datetime.datetime.now()
+#     last_week = today - datetime.timedelta(days=7)
+#     posts = Post.objects.filter(dateCreation__gte=last_week)
+#     categories = set(posts.values_list("postCategory__name", flat=True))
+#     subscribers = set(Category.objects.filter(name__in=categories).values_list("subscribers__email", flat=True))
+#     print(subscribers)
+#     html_content = render_to_string(
+#         "daily_post.html",
+#         {
+#             "link": settings.SITE_URL,
+#             "posts": posts,
+#         }
+#     )
+#
+#     msg = EmailMultiAlternatives(
+#         subject="Публикации за неделю",
+#         body="",
+#         from_email=settings.DEFAULT_FROM_EMAIL,
+#         to=subscribers,
+#     )
+#     msg.attach_alternative(html_content, "text/html")
+#     msg.send()
 
 
 
